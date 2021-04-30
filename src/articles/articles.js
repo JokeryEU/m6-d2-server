@@ -8,21 +8,32 @@ const articleRouter = express.Router();
 
 articleRouter.get("/", async (req, res, next) => {
   try {
-    const { criteria, options, links } = q2m(req.query);
+    if (Object.keys(req.query).length > 0) {
+      const { criteria, options, links } = q2m(req.query);
 
-    const total = await ArticleSchema.countDocuments();
+      const total = await ArticleSchema.countDocuments(criteria);
 
-    console.log(total);
-    const articles = await ArticleSchema.find(criteria, options.fields)
-      .sort(options.sort)
-      .skip(options.skip)
-      .limit(options.limit);
-    res.send({
-      links: links("/articles", total),
-      articles,
-    });
+      const articles = await ArticleSchema.find(criteria, options.fields)
+        .sort(options.sort)
+        .skip(options.skip)
+        .limit(options.limit);
+
+      res.send({ links: links("/articles", total), data: articles });
+    } else {
+      next();
+    }
   } catch (error) {
+    console.log(error);
     next(error);
+  }
+});
+
+articleRouter.get("/", async (req, res, next) => {
+  try {
+    const articles = await ArticleSchema.find();
+    res.status(200).send(articles);
+  } catch (err) {
+    next(err);
   }
 });
 
