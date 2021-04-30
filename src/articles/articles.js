@@ -13,7 +13,20 @@ articleRouter.get("/", async (req, res, next) => {
 
       const total = await ArticleSchema.countDocuments(criteria);
 
-      const articles = await ArticleSchema.find(criteria, options.fields)
+      const articles = await ArticleSchema.find(
+        {
+          headLine: {
+            $regex: new RegExp(criteria.headLine, "i"),
+          },
+          subHead: {
+            $regex: new RegExp(criteria.subHead, "i"),
+          },
+          category: {
+            $regex: new RegExp(criteria.category, "i"),
+          },
+        },
+        options.fields
+      )
         .sort(options.sort)
         .skip(options.skip)
         .limit(options.limit);
