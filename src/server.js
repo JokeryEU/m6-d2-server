@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import articles from "./articles/index.js";
+import articles from "./articles/articles.js";
+import authors from "./articles/authors.js";
 import ErrorResponse from "./lib/errorResponse.js";
 import mongoose from "mongoose";
 import {
@@ -30,6 +31,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/articles", articles);
+app.use("/authors", authors);
 
 app.use(badRequestErrorHandler);
 app.use(notFoundErrorHandler);
@@ -37,7 +39,7 @@ app.use(catchAllErrorHandler);
 
 const PORT = process.env.PORT || 5000;
 console.log(listEndpoints(app));
-console.log(process.env.MONGODB_ADDRESS);
+
 mongoose
   .connect(process.env.MONGODB_ADDRESS, {
     useNewUrlParser: true,
